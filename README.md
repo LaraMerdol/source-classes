@@ -1,4 +1,4 @@
-# graph-builder
+# source-classes
 
 Source classes package for the SAA project for the git, github, and jira data.
 
