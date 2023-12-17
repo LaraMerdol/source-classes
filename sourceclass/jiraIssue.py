@@ -78,7 +78,7 @@ class JiraIssue:
     
     def getPriority(self):
         try:
-            return self.data["fields"]["priority"]
+            return self.data["fields"]["priority"]["name"]
         except (KeyError, TypeError):
             return None
        

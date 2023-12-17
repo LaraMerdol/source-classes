@@ -41,7 +41,7 @@ class JiraIssue:
         on_changelog = re.findall(compiled_regex, "\n".join(history_items))
         on_comments = re.findall(compiled_regex, "\n".join(comments))
         result = set(on_changelog).union(on_comments)
-        non_empty_matches = {item for result_tuple in result for item in result_tuple if item and item.strip() != ""}
+        non_empty_matches = [item for result_tuple in result for item in result_tuple if item and item.strip() != ""]
         return non_empty_matches
     
     def  getCommitIds(self):
@@ -49,7 +49,7 @@ class JiraIssue:
         compiled_regex = re.compile(regex, re.IGNORECASE)
         comments = [comment["body"] for comment in self.data.get("comments_data", []) if comment and comment.get("body")]
         on_comments = re.findall(compiled_regex, "\n".join(comments))
-        non_empty_matches = {item for result_tuple in on_comments for item in result_tuple if item and item.strip() != ""}
+        non_empty_matches = [item for result_tuple in on_comments for item in result_tuple if item and item.strip() != ""]
         return non_empty_matches
 
     def getIssueType(self):
@@ -191,3 +191,6 @@ class JiraIssue:
 
     def getEnvironment(self):
         return self.data["fields"]["environment"] or None
+    
+    def getLinkedIssues(self):
+        return self.bugData["fields"]["issuelinks"]

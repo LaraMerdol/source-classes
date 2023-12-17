@@ -9,60 +9,87 @@ class JiraIssue:
         self.data = data
     
     def getId(self):
-        return self.data["key"]
+        try:
+            return self.data["key"]
+        except (KeyError, TypeError):
+            return None       
     
     def getTitle(self):
-        return self.data["fields"]["summary"]
+        try:
+            return self.data["fields"]["summary"]
+        except (KeyError, TypeError):
+            return None
     
     def getReporter(self):
-        return self.data["fields"]["reporter"]["displayName"] or self.data["fields"]["reporter"]["name"]
+        try:
+            return self.data["fields"]["reporter"]["displayName"] or self.data["fields"]["reporter"]["name"]
+        except (KeyError, TypeError):
+            return None        
     
     def getAssignee(self):
-        if self.data["fields"]["assignee"]:
+        try:
             return self.data["fields"]["assignee"]["displayName"] or self.data["fields"]["assignee"]["name"]
-        else:
-            return None
+        except (KeyError, TypeError):
+            return None               
     
     def getCreatedDate(self):
         return parser.parse(self.data["fields"]["created"] ).replace(tzinfo=timezone.utc) 
     
     def getUrl(self):
-        return (
-            "/".join(self.data["self"].split("/")[:-5])
-            + "/browse/"
-            + self.getId()
-        )
-    def getGithubPullRequestIds(self, url):
-        regex = rf"(?:{re.escape(url)}/pull/(\d+)|GitHub Pull Request #(\d+))"
-        compiled_regex = re.compile(regex, re.IGNORECASE)
-        comments = [comment["body"] for comment in self.data.get("comments_data", []) if comment and comment["body"] is not None]
-        history_items = [item["toString"] for history in self.data["changelog"]["histories"] for item in history["items"] if item["toString"] is not None]
-        issue = self.getId()
-        on_changelog = re.findall(compiled_regex, "\n".join(history_items))
-        on_comments = re.findall(compiled_regex, "\n".join(comments))
-        result = set(on_changelog).union(on_comments)
-        non_empty_matches = {item for result_tuple in result for item in result_tuple if item and item.strip() != ""}
-        return non_empty_matches
-    
-    def  getCommitIds(self):
-        regex = rf"\bcommit\s+([0-9a-fA-F]{40})\b"
-        compiled_regex = re.compile(regex, re.IGNORECASE)
-        comments = [comment["body"] for comment in self.data.get("comments_data", []) if comment and comment.get("body")]
-        on_comments = re.findall(compiled_regex, "\n".join(comments))
-        non_empty_matches = {item for result_tuple in on_comments for item in result_tuple if item and item.strip() != ""}
-        return non_empty_matches
+        try:
+            return (
+                "/".join(self.data["self"].split("/")[:-5])
+                + "/browse/"
+                + self.getId()
+            )
+        except (KeyError, TypeError):
+            return None                 
 
+    def getGithubPullRequestIds(self, url):
+        try:
+            regex = rf"(?:{re.escape(url)}/pull/(\d+)|GitHub Pull Request #(\d+))"
+            compiled_regex = re.compile(regex, re.IGNORECASE)
+            comments = [comment["body"] for comment in self.data.get("comments_data", []) if comment and comment["body"] is not None]
+            history_items = [item["toString"] for history in self.data["changelog"]["histories"] for item in history["items"] if item["toString"] is not None]
+            on_changelog = re.findall(compiled_regex, "\n".join(history_items))
+            on_comments = re.findall(compiled_regex, "\n".join(comments))
+            result = set(on_changelog).union(on_comments)
+            non_empty_matches = [item for result_tuple in result for item in result_tuple if item and item.strip() != ""]
+            return non_empty_matches
+        except (KeyError, TypeError):
+            return None 
+            
+    def  getCommitIds(self):
+        try:        
+            regex = rf"\bcommit\s+([0-9a-fA-F]{40})\b"
+            compiled_regex = re.compile(regex, re.IGNORECASE)
+            comments = [comment["body"] for comment in self.data.get("comments_data", []) if comment and comment.get("body")]
+            on_comments = re.findall(compiled_regex, "\n".join(comments))
+            non_empty_matches = [item for result_tuple in on_comments for item in result_tuple if item and item.strip() != ""]
+            return non_empty_matches
+        except (KeyError, TypeError):
+            return None 
+            
     def getIssueType(self):
-        return self.data["fields"]["issuetype"]["name"]
+        try:
+            return self.data["fields"]["issuetype"]["name"]
+        except (KeyError, TypeError):
+            return None
     
     def getPriority(self):
-        return self.data["fields"]["priority"]
-    
+        try:
+            return self.data["fields"]["priority"]["name"]
+        except (KeyError, TypeError):
+            return None
+       
     def getResolutionDate(self):
-        if self.data["fields"]["resolutiondate"]:
-            return parser.parse(self.data["fields"]["resolutiondate"] ).replace(tzinfo=timezone.utc) 
-        return None
-    
+        try:
+            if self.data["fields"]["resolutiondate"]:
+                return parser.parse(self.data["fields"]["resolutiondate"] ).replace(tzinfo=timezone.utc) 
+            return None
+        except (KeyError, TypeError):
+            return None
+               
     def getAllEventsDates(self):
         histories = [history["created"] for history in self.data["changelog"]["histories"]]
         comments_created = [comment["created"] for comment in self.data["comments_data"]]
@@ -74,18 +101,27 @@ class JiraIssue:
         return unique_sorted_dates        
     
     def getStatus(self):
-        return self.data["fields"]["status"]["name"]
+        try:
+            return self.data["fields"]["status"]["name"]
+        except (KeyError, TypeError):
+            return None        
     
     def getAssigner(self):
-        for history in self.data["changelog"]["histories"]:
-            for item in history["items"]:
-                if item["field"] == "assignee":
-                    return history["author"]["displayName"] or history["author"]["name"]
-        return None
-    
-    def getCommentsData(self):
-        return self.data["comments_data"] if "comments_data" in self.data else None
+        try:
+            histories = self.data["changelog"]["histories"]
+            for history in reversed(histories):
+                for item in history["items"]:
+                    if item["field"] == "assignee":
+                        return history["author"]["displayName"] or history["author"]["name"]
+            return None
+        except (KeyError, TypeError):
+            return None   
         
+    def getCommentsData(self):
+        try:
+            return self.data["comments_data"] if "comments_data" in self.data else None
+        except (KeyError, TypeError):
+            return None           
 
     def getReopenCount(self):
         reopenCount = 0
@@ -96,7 +132,6 @@ class JiraIssue:
                 or (item["toString"]== "Resolved" and item["fromString"]=="Reopened")
                 or (item["toString"]== "Closed" and item["fromString"]=="Reopened")):
                     reopenPeriods.append( history)
-
         for index, period in enumerate(reopenPeriods):  
             if index + 1 < len(reopenPeriods):
                 first = parser.parse(period["created"] ).replace(tzinfo=timezone.utc)  
@@ -173,13 +208,21 @@ class JiraIssue:
         return None   
     
     def getFixedVersions(self):
-        fixVersions = self.data["fields"]["fixVersions"]
-        return [version["name"] for version in fixVersions]
+        try:
+            fixVersions = self.data["fields"]["fixVersions"]
+            return [version["name"] for version in fixVersions]
+        except (KeyError, TypeError):
+            return None
+
 
     
     def getAffectedVersions(self):
-        versions = self.data["fields"]["versions"]
-        return [version["name"] for version in versions]
+        try:
+            versions = self.data["fields"]["versions"]
+            return [version["name"] for version in versions]
+        except (KeyError, TypeError):
+            return None
+
     
     def isDuplicate(self):
         histories = self.data["changelog"]["histories"]
@@ -190,4 +233,14 @@ class JiraIssue:
         return False        
 
     def getEnvironment(self):
-        return self.data["fields"]["environment"] or None
+        try:
+            return self.data["fields"]["environment"]
+        except (KeyError, TypeError):
+            return None
+    
+    def getLinkedIssues(self):
+        try:
+            return self.data["fields"]["issuelinks"]
+        except (KeyError, TypeError):
+            return None        
+        

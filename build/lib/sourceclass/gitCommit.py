@@ -12,14 +12,20 @@ class GitCommit:
         return self.data["commit"]
     
     def getAuthor(self):
-        author = {
-            "name":self.data["Author"].split("<")[0].strip(),
-            "email":self.data["Author"].split("<")[1].strip().split(">")[0].strip() 
-        }
-        return author
+        try:
+            author = {
+                "name":self.data["Author"].split("<")[0].strip(),
+                "email":self.data["Author"].split("<")[1].strip().split(">")[0].strip() 
+            }
+            return author
+        except (KeyError, TypeError):
+            return None        
     
     def getCommitDate(self):
-        return parser.parse(self.data["AuthorDate"] ).replace(tzinfo=timezone.utc)
+        try:
+            return parser.parse(self.data["AuthorDate"] ).replace(tzinfo=timezone.utc)
+        except (KeyError, TypeError):
+            return None         
     
     def getModifiedFilePaths(self):
         files = []

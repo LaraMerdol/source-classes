@@ -1,0 +1,13 @@
+README.md
+setup.py
+sourceclass/__init__.py
+sourceclass/gitCommit.py
+sourceclass/githubPr.py
+sourceclass/jiraIssue.py
+sourceclass.egg-info/PKG-INFO
+sourceclass.egg-info/SOURCES.txt
+sourceclass.egg-info/dependency_links.txt
+sourceclass.egg-info/top_level.txt
+tests/test_commit.py
+tests/test_issue.py
+tests/test_pr.py

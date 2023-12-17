@@ -9,7 +9,7 @@ The `sourceclass` package provides source classes for the Software Artifact Anal
 You can install the `sourceclass` package using pip. Use the following command:
 
 ```bash
-pip install sourceclass==0.1.3
+pip install sourceclass==0.1.4
 ```
 ## Usage
 
