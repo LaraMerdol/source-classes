@@ -111,7 +111,7 @@ class JiraIssue:
             histories = self.data["changelog"]["histories"]
             for history in reversed(histories):
                 for item in history["items"]:
-                    if item["field"] == "assignee":
+                    if item["field"] == "assignee" and  history["author"]:
                         return history["author"]["displayName"] or history["author"]["name"]
             return None
         except (KeyError, TypeError):
@@ -183,9 +183,9 @@ class JiraIssue:
     def getResolver(self):
         for history in  self.data["changelog"]["histories"]:
             for item in history["items"]:
-                if item["field"] == "resolution" and item["toString"]:
+                if item["field"] == "resolution" and item["toString"] and history["author"]:
                     return history["author"]["displayName"] or history["author"]["name"]
-                if item["field"] == "status" and item["toString"].lower() == "resolved":
+                if item["field"] == "status" and item["toString"].lower() == "resolved" and history["author"]:
                     return history["author"]["displayName"] or history["author"]["name"]
         return None   
          
@@ -194,7 +194,7 @@ class JiraIssue:
         if len(history)>0:
             lastItem = history[-1]
             for item in  lastItem["items"]:
-                if item["field"] == "status" and item["toString"]=="Closed":
+                if item["field"] == "status" and item["toString"]=="Closed" and lastItem["author"]:
                     return lastItem["author"]["displayName"] or lastItem["author"]["name"]
         return None
     
