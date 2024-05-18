@@ -1,9 +1,10 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import timezone
 from dateutil import parser
 import json
 import os
 from sourceclass import GitCommit
+
 
 class TestGitCommit(unittest.TestCase):
     def setUp(self):
