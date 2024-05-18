@@ -31,14 +31,14 @@ class GithubPr:
         try:
             reviewers = []
             for review in self.data["reviews_data"]:
-                if review["state"] == "PENDING" or review["body"] == "":
+                if review["state"] == "PENDING":
                     continue
-                reviewers.append(review["user-data"]["name"]or review["user_data"]["login"] )
+                reviewers.append(review["user-data"]["name"] or review["user_data"]["login"])
 
             for reviewComment in self.data["review_comments_data"]:
                 if reviewComment["user_data"] is None:
                     continue
-                reviewers.append( reviewComment["user_data"]["name"] or reviewComment["user_data"]["login"] )
+                reviewers.append(reviewComment["user_data"]["name"] or reviewComment["user_data"]["login"])
             return sorted(list(set(reviewers)))
         except (KeyError, TypeError):
             return None 

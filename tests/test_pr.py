@@ -1,13 +1,15 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import timezone
 from dateutil import parser
 import json
 import os
 from sourceclass import GithubPr
 
+
 class TestGithubPr(unittest.TestCase):
     def setUp(self):
         file_path = os.path.join("data", "0_github-pr__2023-12-17.json")
+        print(file_path)
         with open(file_path, encoding="utf-8") as f:
             self.lines = f.readlines()
             self.artifacts = []
@@ -40,7 +42,7 @@ class TestGithubPr(unittest.TestCase):
 
     def test_reviewers(self):
         test_reviewers = self.pr.getReviewers()
-        control_reviewers = []
+        control_reviewers = ["iremhanhan", "Idil Hanhan"]
         self.assertEqual(test_reviewers, control_reviewers)
 
     def test_createdAt(self):
@@ -92,6 +94,7 @@ class TestGithubPr(unittest.TestCase):
         test_closeDate = self.pr.getDateClosed()
         control_closeDate = parser.parse('2014-05-12T01:37:18Z').replace(tzinfo=timezone.utc)
         self.assertEqual(test_closeDate, control_closeDate)
+
 
 if __name__ == '__main__':
     unittest.main()
