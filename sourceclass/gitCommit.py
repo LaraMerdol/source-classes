@@ -19,7 +19,24 @@ class GitCommit:
             }
             return author
         except (KeyError, TypeError):
-            return None        
+            return None
+
+    def getCoAuthor(self):
+        result = []
+        try:
+            # Co-author information is found in the following format in git data
+            # { ... "message": "...\n\n Co-authored-by: name <email>", ..}
+            data = self.data["message"].split("Co-authored-by:")
+            if len(data) > 1:
+                co_authors = data[1:]
+                for co_author in co_authors:
+                    result.append({
+                        "name": co_author.split("<")[0].strip(),
+                        "email": co_author.split("<")[1].strip().split(">")[0].strip()
+                    })
+            return result
+        except (KeyError, TypeError):
+            return None
     
     def getCommitDate(self):
         try:

@@ -31,6 +31,9 @@ class TestGitCommit(unittest.TestCase):
         expected_author = {"name": "Michele Mostarda", "email": "dev-null@apache.org"}
         self.assertEqual(self.git_commit.getAuthor(), expected_author)
 
+    def test_getCoAuthor(self):
+        self.assertEqual(self.git_commit.getCoAuthor(), [])
+
     def test_getCommitDate(self):
         expected_date = parser.parse("Thu Dec 18 17:56:05 2008 +0000").replace(tzinfo=timezone.utc)
         self.assertEqual(self.git_commit.getCommitDate(), expected_date)
