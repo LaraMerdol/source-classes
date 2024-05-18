@@ -1,7 +1,7 @@
 import re
-from datetime import datetime, timezone
+from datetime import timezone
 from dateutil import parser
-import time
+
 
 class GitCommit:
         

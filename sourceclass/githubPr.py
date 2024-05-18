@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from dateutil import parser
 import time
 
+
 class GithubPr:
 
     def __init__(self, data):
