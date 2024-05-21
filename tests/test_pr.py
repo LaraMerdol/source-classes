@@ -9,7 +9,6 @@ from sourceclass import GithubPr
 class TestGithubPr(unittest.TestCase):
     def setUp(self):
         file_path = os.path.join("data", "0_github-pr__2023-12-17.json")
-        print(file_path)
         with open(file_path, encoding="utf-8") as f:
             self.lines = f.readlines()
             self.artifacts = []
