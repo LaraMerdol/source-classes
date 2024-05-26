@@ -21,7 +21,7 @@ class GitCommit:
         except (KeyError, TypeError):
             return None
 
-    def getCoAuthor(self):
+    def getCoAuthors(self):
         result = []
         try:
             # Co-author information is found in the following format in git data
