@@ -48,20 +48,24 @@ class GitCommit:
         files = []
         for file_instance in self.data.get("files", []):
             added = file_instance.get("added", None)
+            created = False
             removed = file_instance.get("removed", None)
-
+            deleted =False
             if added is not None and removed is not None and added != '-' and removed != '-':
                 change_loc = added + removed
             else:
                 change_loc = 0
-
+            if file_instance.get("action") and file_instance.get("action") == "D":
+                deleted = True
+            if file_instance.get("action") and file_instance.get("action") == "A":
+                created = True           
             file = {
                 "name": file_instance.get("file", ""),
-                "changeLOC": change_loc
+                "changeLOC": change_loc,
+                "deleted": deleted,
+                "created": created
             }
             files.append(file)
-
-        return files
     
     def getRenamedFilePairs(self):
         pairs = []

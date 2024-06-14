@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from dateutil import parser
 import time
 
+
 class GithubPr:
 
     def __init__(self, data):
@@ -32,7 +33,7 @@ class GithubPr:
             for review in self.data["reviews_data"]:
                 if review["state"] == "PENDING" or review["body"] == "":
                     continue
-                reviewers.append(review["user-data"]["name"]or review["user_data"]["login"] )
+                reviewers.append(review["user-data"]["name"] or review["user_data"]["login"] )
 
             for reviewComment in self.data["review_comments_data"]:
                 if reviewComment["user_data"] is None:

@@ -21,7 +21,7 @@ class TestGitCommit(unittest.TestCase):
                         print(f"Invalid JSON structure: {data}")
                 except json.JSONDecodeError as e:
                     print(f"Error decoding JSON: {e}")
-        self.git_commit = GitCommit(self.artifacts[0])    
+        self.git_commit = GitCommit(self.artifacts[8])    
 
 
     def test_getUniqueId(self):
@@ -40,11 +40,14 @@ class TestGitCommit(unittest.TestCase):
 
     def test_getModifiedFilePaths(self):
         expected_files = []
+        files = self.git_commit.getModifiedFilePaths()
         self.assertEqual(self.git_commit.getModifiedFilePaths(), expected_files)
 
     def test_getRenamedFilePairs(self):
         expected_pairs = []
+        files = self.git_commit.getRenamedFilePairs()
         self.assertEqual(self.git_commit.getRenamedFilePairs(), expected_pairs)
+
 
     def test_getReferencedIssues(self):
         expected_issues = []
